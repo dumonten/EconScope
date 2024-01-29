@@ -1,0 +1,15 @@
+version: '3.11'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python producer.py'
+    volumes:
+      - .:/gpt-service
+   
+  queue: 
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    command: 'python consumer.py'

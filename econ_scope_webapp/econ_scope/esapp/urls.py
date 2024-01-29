@@ -1,8 +1,21 @@
 from django.urls import path, include
-from . import views 
+from .views import ProductViewSet, UserAPIView
+
 
 urlpatterns = [
-    path('', views.home, name='es-home'),
-    path('about/', views.about, name='es-about'),
+    path('products', ProductViewSet.as_view(
+        {
+            'get': 'list', 
+            'post': 'create'
+        }
+    )),
+    path('products/<str:pk>', ProductViewSet.as_view(
+        {
+            'get': 'retrieve', 
+            'put': 'update', 
+            'delete': 'destroy' 
+        }
+    )),    
+    path('user', UserAPIView.as_view()),   
 ]
 

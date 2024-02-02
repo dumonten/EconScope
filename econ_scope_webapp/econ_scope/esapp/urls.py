@@ -1,8 +1,16 @@
-from django.urls import path, include
-from . import views 
+from django.contrib import admin
+from django.urls import path
+from .views import ProductViewSet
+from . import views
 
 urlpatterns = [
-    path('', views.home, name='es-home'),
-    path('about/', views.about, name='es-about'),
+    path('', ProductViewSet.as_view({
+        "get": "home",
+        "post": "image",
+    })),
+    path('internal', ProductViewSet.as_view({
+        "post": "internal",
+    })),
 ]
+
 

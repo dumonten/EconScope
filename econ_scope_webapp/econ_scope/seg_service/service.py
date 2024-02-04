@@ -2,7 +2,8 @@ import pika
 import numpy as np
 import cv2
 
-from segmentation import crop_image, im2json, json2im
+from image_converter import ImageConverter
+from receipt_detector import ReceiptDetector
 
 params = pika.URLParameters('amqps://oythsbqw:kADpJw3x8b7qKo_gHiirOJupaj-nI1F3@kangaroo.rmq.cloudamqp.com/oythsbqw')
 connection = pika.BlockingConnection(params)
@@ -10,14 +11,14 @@ channel = connection.channel()
 channel.queue_declare(queue='seg')
 
 
-def callback(ch, method, properties, body):
+def callback(ch, method, properties, message):
     if properties.content_type == "segmentation":
-        print("here")
-        message = json2im(body)
+        message = ImageConverter.decode(message)
         np_array = cv2.imdecode(np.frombuffer(message["image"], np.uint8), cv2.IMREAD_COLOR)
-        cropped_image = crop_image(np_array)
-        message["image"] = cv2.imencode(".jpg", cropped_image)[1].tobytes()
-        message = im2json(message)
+        np_array = cv2.cvtColor(np_array, cv2.COLOR_BGR2RGB)
+        receipt = ReceiptDetector.detect(np_array)
+        message["image"] = cv2.imencode(".jpg", receipt)[1].tobytes()
+        message = ImageConverter.encode(message)
         properties = pika.BasicProperties("segmentation_answer")
         channel.basic_publish(exchange='', routing_key='rec', body=message, properties=properties)
 

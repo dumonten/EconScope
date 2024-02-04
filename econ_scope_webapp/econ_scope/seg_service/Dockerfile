@@ -10,4 +10,9 @@ RUN mim install mmengine
 RUN mim install 'mmcv>=2.0.0'
 RUN mim install mmdet
 RUN pip install pika==1.3.2
-COPY . /seg_service
+RUN apt-get install -y tesseract-ocr
+RUN apt-get install -y libtesseract-dev
+RUN pip install pytesseract
+RUN pip install opencv-contrib-python
+RUN pip install imutils
+COPY . /seg_service.

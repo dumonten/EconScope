@@ -2,25 +2,12 @@ from rest_framework import viewsets
 from django.http import HttpResponse
 from django.shortcuts import render
 from .producer import publish
+from utils import ThreadSafeDict
 import uuid
 import base64
-import threading
 import time
 
-proc_dict = dict()
-lock = threading.Lock()
-
-def update_dict(key, value):
-    with lock:
-        proc_dict[key] = value
-
-def get_dict_value(key):
-    with lock:
-        return proc_dict[key]
-    
-def delete_from_dict(key):
-    with lock:
-        del proc_dict[key]
+proc_dict = ThreadSafeDict()
 
 class ProductViewSet(viewsets.ViewSet):
     def home(self, request):
@@ -37,13 +24,13 @@ class ProductViewSet(viewsets.ViewSet):
             request_uuid = str(uuid.uuid4())
             publish({"uuid": request_uuid, "image": byte_string})
             
-            update_dict(request_uuid, (False, None))
-            while not get_dict_value(request_uuid)[0]:
+            proc_dict.update_dict(request_uuid, (False, None))
+            while not proc_dict.get_dict_value(request_uuid)[0]:
                 time.sleep(0.5)
                 print("wait")
             
-            encoded_image = get_dict_value(request_uuid)[1]
-            delete_from_dict(request_uuid)
+            encoded_image = proc_dict.get_dict_value(request_uuid)[1]
+            proc_dict.delete_from_dict(request_uuid)
             template = 'es/image.html'
             return render(request, template, {"encoded_image": encoded_image})
 
@@ -53,13 +40,6 @@ class ProductViewSet(viewsets.ViewSet):
         base64_image = base64.b64encode(image).decode('utf-8')
         uuid = request.POST.get("uuid")
     
-        update_dict(uuid, (True, base64_image))
+        proc_dict.update_dict(uuid, (True, base64_image))
         
         return HttpResponse("Success", status=200)
-        
-
-def index(request):
-    return render(request, "chat/index.html")
-
-def room(request, room_name):
-    return render(request, "chat/room.html", {"room_name": room_name})

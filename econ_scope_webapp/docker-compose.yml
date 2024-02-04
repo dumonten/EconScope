@@ -1,0 +1,52 @@
+version: '3.11'
+services:
+  backend:
+    network_mode: host
+    build:
+      context: ./econ_scope
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    command: "python manage.py runserver 127.0.0.1:8000"
+  backend_consumer:
+    network_mode: host
+    build:
+      context: ./econ_scope
+      dockerfile: Dockerfile
+    command: "python consumer.py"
+  seg_service:
+    network_mode: host
+    build:
+      context: ./seg_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./seg_service:/seg_service
+    command: "python service.py"
+  rec_service:
+    network_mode: host
+    build:
+      context: ./rec_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./rec_service:/rec_service
+    command: "python service.py"
+  gpt_service:
+    network_mode: host
+    build:
+      context: ./gpt_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./gpt_service:/gpt_service
+    command: "python service.py"
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: econscope_db
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - 3306:3306
+  

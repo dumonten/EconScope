@@ -19,24 +19,18 @@ services:
     build:
       context: ./seg_service
       dockerfile: Dockerfile
-    volumes:
-      - ./seg_service:/seg_service
     command: "python service.py"
   rec_service:
     network_mode: host
     build:
       context: ./rec_service
       dockerfile: Dockerfile
-    volumes:
-      - ./rec_service:/rec_service
     command: "python service.py"
   gpt_service:
     network_mode: host
     build:
       context: ./gpt_service
       dockerfile: Dockerfile
-    volumes:
-      - ./gpt_service:/gpt_service
     command: "python service.py"
   db:
     image: mysql

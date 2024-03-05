@@ -1,3 +1,0 @@
-python ./PaddleOCR/tools/infer/predict_system.py --image_dir="./image.jpg" --det_model_dir="./detection_model" --rec_model_dir="./recognition_model" --rec_image_shape="3, 48, 320" --rec_char_dict_path="./PaddleOCR/ppocr/utils/dict/cyrillic_dict.txt" --cls_model_dir="./cls_model" --use_gpu=true
-
-python ./PaddleOCR/tools/export_model.py -c ./cyrillic_PP-OCRv3_rec.yml -o  Global.pretrained_model=./output/my_model/best_accuracy.pdparams  Global.save_inference_dir=./inference/cyrillic_PP-OCRv3_rec

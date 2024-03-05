@@ -8,10 +8,26 @@ from mmdet.apis import init_detector, inference_detector
 from pytesseract import Output
 
 class ReceiptDetector:
+	"""
+    A class for detecting and processing receipts in images.
+
+    This class uses a pre-trained model to detect receipts in images, extracts the receipt area,
+    performs perspective transformation to align the receipt, preprocesses the image for text recognition,
+    and rotates the image based on detected orientation.
+    """
 	model = init_detector(os.path.dirname(__file__) + "/model.py", os.path.dirname(__file__) + "/epoch_110.pth", device="cpu")
 
 	@classmethod
 	def detect(cls, image):
+		"""
+        Detects a receipt in the given image and processes it.
+
+        Parameters:
+        - image (numpy.ndarray): The input image.
+
+        Returns:
+        - rotated_warp (numpy.ndarray): The processed receipt image.
+        """
 		results = inference_detector(cls.model, image)
 		mask = results.pred_instances.masks.cpu().numpy()[0]
 		contour = cls._binary_mask_to_polygon(mask)
@@ -23,6 +39,15 @@ class ReceiptDetector:
     
 	@staticmethod
 	def _binary_mask_to_polygon(mask):
+		"""
+        Converts a binary mask to a polygon contour.
+
+        Parameters:
+        - mask (numpy.ndarray): The binary mask.
+
+        Returns:
+        - contour (numpy.ndarray): The polygon contour.
+        """
 		padded_mask = np.pad(mask, pad_width=1, mode="constant", constant_values=0)
 		contours = measure.find_contours(padded_mask, 0.5)
 		contours = np.subtract(contours, 1)
@@ -33,6 +58,15 @@ class ReceiptDetector:
 
 	@staticmethod
 	def _get_bounding_rectangle(contour):
+		"""
+        Calculates the bounding rectangle for a given contour.
+
+        Parameters:
+        - contour (numpy.ndarray): The contour.
+
+        Returns:
+        - rect (numpy.ndarray): The bounding rectangle.
+        """
 		min_x = np.min(contour[:, 0])
 		min_y = np.min(contour[:, 1])
 		max_x = np.max(contour[:, 0])
@@ -46,6 +80,16 @@ class ReceiptDetector:
 
 	@staticmethod
 	def _perspective_transform(image, rect):
+		"""
+        Applies a perspective transformation to align the receipt.
+
+        Parameters:
+        - image (numpy.ndarray): The input image.
+        - rect (numpy.ndarray): The bounding rectangle.
+
+        Returns:
+        - warp (numpy.ndarray): The transformed image.
+        """
 		(tl, tr, br, bl) = rect
 		width_bottom = np.sqrt((br[0] - bl[0]) ** 2 + (br[1] - bl[1]) ** 2)
 		width_top = np.sqrt((tr[0] - tl[0]) ** 2 + (tr[1] - tl[1]) ** 2)
@@ -65,6 +109,15 @@ class ReceiptDetector:
 	
 	@staticmethod
 	def _preprocess(image): 
+		"""
+        Preprocesses the image for text recognition.
+
+        Parameters:
+        - image (numpy.ndarray): The input image.
+
+        Returns:
+        - out (numpy.ndarray): The preprocessed image.
+        """
 		# 0/0 == 0 - ignore dividing 
 		np.seterr(divide='ignore', invalid='ignore') 
 
@@ -89,6 +142,15 @@ class ReceiptDetector:
 	
 	@staticmethod
 	def _rotate(receipt_image):
+		"""
+        Rotates the image based on detected orientation.
+
+        Parameters:
+        - receipt_image (numpy.ndarray): The input image.
+
+        Returns:
+        - rotated (numpy.ndarray): The rotated image.
+        """
 		results = pytesseract.image_to_osd(receipt_image, output_type=Output.DICT)
 		rotated = imutils.rotate_bound(receipt_image, angle=results["rotate"])
 		return rotated

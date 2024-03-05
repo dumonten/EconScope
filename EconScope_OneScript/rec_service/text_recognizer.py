@@ -2,6 +2,12 @@ import os
 from paddleocr import PaddleOCR
 
 class TextRecognizer(): 
+    """
+    A class for recognizing text in images using PaddleOCR.
+
+    This class initializes a PaddleOCR model with specific configurations for Russian language text recognition,
+    including angle classification and space character recognition. It provides a method to extract text from an image.
+    """
     DET_DIR_NAME = "detection_model"
     REC_DIR_NAME = "recognition_model"
     CLS_DIR_NAME = "cls_model"
@@ -19,6 +25,15 @@ class TextRecognizer():
 
     @classmethod
     def get_text(cls, img): 
+        """
+        Extracts text from an image using the PaddleOCR model.
+
+        Parameters:
+        - img (numpy.ndarray): The input image.
+
+        Returns:
+        - text (str): The extracted text.
+        """
         text = cls.model(img, cls=True)
         text = list(map(lambda x: x[1][0], text))
         text = ' '.join(map(str, text))

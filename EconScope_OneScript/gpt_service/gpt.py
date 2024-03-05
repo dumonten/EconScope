@@ -2,6 +2,14 @@ import g4f
 import re
 
 class Gpt():
+    """
+    A class for interacting with GPT models to analyze receipt data.
+
+    This class configures requests for GPT models to analyze receipt data, extracts categories from a file,
+    and formats the request template. It also includes a method to send the request to the GPT model and
+    extract the JSON response.
+    """
+
     # Configure request 
     REQUEST_TEMPLATE = "Проанализируй текст чека ниже и предоставь ответ исключительно в виде json файла (структура json должна соответствовать шаблону, запрещено \
     добавлять свои ключи. Также если значение для какого-то ключа неопределено, то допустимо испольование null в качестве значения. \
@@ -27,6 +35,16 @@ class Gpt():
 
     @staticmethod
     def ask(request, model): 
+        """
+        Sends a request to the GPT model and returns the response.
+
+        Parameters:
+        - request (str): The formatted request string.
+        - model (str): The GPT model to use.
+
+        Returns:
+        - response (str): The response from the GPT model.
+        """
         response = g4f.ChatCompletion.create(
             model=model,
             provider=g4f.Provider.Bing,
@@ -36,6 +54,16 @@ class Gpt():
     
     @classmethod
     def receipt_ask(cls, receipt_data, is_gpt_version_4=True): 
+        """
+        Formats the request for receipt analysis and sends it to the GPT model.
+
+        Parameters:
+        - receipt_data (str): The text data from the receipt to analyze.
+        - is_gpt_version_4 (bool): Flag to indicate if GPT-4 should be used. Default is True.
+
+        Returns:
+        - json_response (str): The JSON response from the GPT model.
+        """
         if is_gpt_version_4: 
             model = g4f.models.gpt_4
         else: 

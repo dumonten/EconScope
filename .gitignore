@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,database
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,database
  
+<<<<<<< HEAD
+=======
+*.pth
+
+>>>>>>> main
  ### VisualStudioCode ###
 *.vscode/*
 *!.vscode/settings.json

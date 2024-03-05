@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IMAGE</title>
+</head>
+<body>
+  <h1>Привет, IMAGE!</h1>
+  <p>Это пример загрузки изображения с компьютера.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" accept="image/*" capture="camera" name="image">
+    <button type="submit">Upload</button>
+  </form>
+  <img src="data:image/jpeg;base64,{{ encoded_image }}" alt="Uploaded Image"/>
+</body>
+</html>

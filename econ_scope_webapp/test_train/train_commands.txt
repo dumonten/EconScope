@@ -1,0 +1,1 @@
+python ./PaddleOCR/tools/train.py -c ./cyrillic_PP-OCRv3_rec.yml -o Global.pretrained_model=./output/my_model/best_accuracy.pdparams

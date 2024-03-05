@@ -7,16 +7,14 @@ connection = pika.BlockingConnection(params)
 
 channel = connection.channel()
 
-channel.queue_declare(queue='main')
+channel.queue_declare(queue='test')
 
 
 def callback(ch, method, properties, body):
     print('Received')
     print(body)
-    # res = '<h1>'+ str(body) + '</h1>'
-    return Response('<h1> FIOOOOOL  </h1>')
 
-channel.basic_consume(queue='main', on_message_callback=callback, auto_ack=True)
+channel.basic_consume(queue='test', on_message_callback=callback, auto_ack=True)
 
 print('Started Consuming')
 

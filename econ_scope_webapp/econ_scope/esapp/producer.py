@@ -9,4 +9,4 @@ channel = connection.channel()
 
 def publish():
     # properties = pika.BasicProperties(method)
-    channel.basic_publish(exchange='', routing_key='gpt', body='make hello')
+    channel.basic_publish(exchange='', routing_key='test', body='make hello')

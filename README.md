@@ -121,7 +121,7 @@ This approach includes the submission of the list of categories, the text extrac
 
 - Roboflow
 
-- PyTesseract
+- Tesseract
 
 - PaddleOCR
 
